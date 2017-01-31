@@ -1,7 +1,5 @@
 Changes
-Build.PL
 Makefile.PL
-META.yml
 MANIFEST
 README
 examples/DHTML_example.html
@@ -18,3 +16,4 @@ t/40_Tree_Simple_View_ASCII_test.t
 t/41_Tree_Simple_View_ASCII_w_formatter.t
 t/pod.t
 t/pod_coverage.t
+t/manifest.t

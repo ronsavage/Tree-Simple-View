@@ -9,95 +9,111 @@ use parent 'Tree::Simple::View';
 
 our $VERSION = '0.02';
 
-sub expandPathSimple  {
-    my ($self, $tree, @full_path) = @_;
-        
-    my $output = '';    
+sub expandPathSimple {
+    my ( $self, $tree, @full_path ) = @_;
+
+    my $output = '';
     my @vert_dashes;
 
     my $traversal = sub {
-        my ($t, $redo, $current_path, @path) = @_;
-        $output .= $self->_processNode($t, \@vert_dashes)
-            unless $t->isRoot; 
-        foreach my $child ($t->getAllChildren()) {     
-            if (defined $current_path && $self->_compareNodeToPath($current_path, $child)) {
-                $output .= $redo->($child, $redo, @path);
+        my ( $t, $redo, $current_path, @path ) = @_;
+        $output .= $self->_processNode( $t, \@vert_dashes )
+          unless $t->isRoot;
+        foreach my $child ( $t->getAllChildren() ) {
+            if ( defined $current_path && $self->_compareNodeToPath( $current_path, $child ) ) {
+                $output .= $redo->( $child, $redo, @path );
             }
             else {
-                $output .= $self->_processNode($child, \@vert_dashes); 
+                $output .= $self->_processNode( $child, \@vert_dashes );
             }
         }
     };
-    
-    $output .= $self->_processNode($tree, \@vert_dashes)
-        if $self->{include_trunk};    
-    
-    if ($self->{include_trunk} && defined $full_path[0] && $self->_compareNodeToPath($full_path[0], $tree)) {
+
+    $output .= $self->_processNode( $tree, \@vert_dashes )
+      if $self->{include_trunk};
+
+    if (   $self->{include_trunk}
+        && defined $full_path[0]
+        && $self->_compareNodeToPath( $full_path[0], $tree ) )
+    {
         shift @full_path;
     }
-    
+
     # Its the U combinator baby!
-    $traversal->($tree, $traversal, @full_path);        
+    $traversal->( $tree, $traversal, @full_path );
 
     return $output;
 }
 
-sub expandAllSimple  {
-    my ($self) = @_;   
-    
-    my $output = '';    
+sub expandAllSimple {
+    my ($self) = @_;
+
+    my $output = '';
     my @vert_dashes;
 
-    $output .= $self->_processNode($self->{tree}, \@vert_dashes)
-        if $self->{include_trunk};
+    $output .= $self->_processNode( $self->{tree}, \@vert_dashes )
+      if $self->{include_trunk};
 
-    $self->{tree}->traverse(sub {
-        my $t = shift;
-        $output .= $self->_processNode($t, \@vert_dashes);
-    });
-    
+    $self->{tree}->traverse(
+        sub {
+            my $t = shift;
+            $output .= $self->_processNode( $t, \@vert_dashes );
+        }
+    );
+
     return $output;
 }
 
-sub expandPathComplex { 
-    my ($self, $tree, undef, @full_path) = @_;
+sub expandPathComplex {
+    my ( $self, $tree, undef, @full_path ) = @_;
+
     # complex stuff is not supported here ...
-    $self->expandPathSimple($tree, @full_path);
+    $self->expandPathSimple( $tree, @full_path );
 }
 
-*expandAllComplex  = \&expandAllSimple;
+*expandAllComplex = \&expandAllSimple;
 
 sub _processNode {
     my ( $self, $t, $vert_dashes ) = @_;
     my $depth = $t->getDepth;
+
     my $sibling_count = $t->isRoot ? 1 : $t->getParent->getChildCount;
 
     $depth++ if $self->{include_trunk};
 
-    my $config = $self->{config};
-    my $indent = $config->{indent} ? $config->{indent} : "        ";
-    my @indents = map { $vert_dashes->[$_] || $indent } 0 .. $depth - 1;
+    my $characters = $self->_merge_characters;
+    my @indents = map { $vert_dashes->[$_] || $characters->{indent} } 0 .. $depth - 1;
 
-    @$vert_dashes = ( 
-        @indents,
-        (
-            $sibling_count == 1 
-                ? ($indent) 
-                : ( $config->{pipe} || "    |   " ) 
-        )
-    );
+    @$vert_dashes =
+      ( @indents, ( $sibling_count == 1 ? $characters->{indent} : $characters->{pipe} ) );
 
-    $vert_dashes->[$depth] = $indent
-        if ( $sibling_count == ( $t->getIndex + 1 ) );
+    $vert_dashes->[$depth] = $characters->{indent}
+      if ( $sibling_count == ( $t->getIndex + 1 ) );
 
-    my $node = exists $config->{node_formatter}
-        ? $config->{node_formatter}->($t) 
-        : $t->getNodeValue;
+    my $node =
+      exists $self->{config}->{node_formatter} ? $self->{config}->{node_formatter}->($t) : $t->getNodeValue;
 
-    return ( 
-        ( join "" => @indents[ 1 .. $#indents ] ) .
-        ( $depth ? $config->{branch} || "    |---" : "" ) . $node . "\n"
-    );
+    return (
+        ( join "" => @indents[ 1 .. $#indents ] ) . ( $depth ? $characters->{branch} : "" ) . $node . "\n" );
+}
+
+=head2 _merge_characters
+
+Merge characters with given through constructor
+
+=cut
+
+sub _merge_characters {
+    my ($self) = shift;
+
+    return { pipe => '    |   ', indent => '        ', branch => '    |---', }
+      if ( !defined $self->{config} || !defined $self->{config}->{characters} );
+
+    my $characters = { @{ $self->{config}->{characters} } };
+    $characters->{pipe}   = '    |   ' unless $characters->{pipe};
+    $characters->{indent} = '        ' unless $characters->{indent};
+    $characters->{branch} = '    |---' unless $characters->{branch};
+    return $characters;
 }
 
 1;
@@ -203,5 +219,3 @@ This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
 
 =cut
-
-0

@@ -3,12 +3,11 @@ package Tree::Simple::View::ASCII;
 
 use strict;
 use warnings;
+use Tree::Simple::View::Exceptions;
+
+use parent 'Tree::Simple::View';
 
 our $VERSION = '0.02';
-
-use base 'Tree::Simple::View';
-
-use Tree::Simple::View::Exceptions;
 
 sub expandPathSimple  {
     my ($self, $tree, @full_path) = @_;
@@ -69,36 +68,36 @@ sub expandPathComplex {
 *expandAllComplex  = \&expandAllSimple;
 
 sub _processNode {
-    my ($self, $t, $vert_dashes) = @_;
-    
-    my $depth         = $t->getDepth;
-    my $sibling_count = $t->isRoot ? 1 : $t->getParent->getChildCount;    
-    
-    $depth++ if $self->{include_trunk};
-    
-    my @indent = map {
-        $vert_dashes->[$_] || "        "
-    } 0 .. $depth - 1;
+    my ( $self, $t, $vert_dashes ) = @_;
+    my $depth = $t->getDepth;
+    my $sibling_count = $t->isRoot ? 1 : $t->getParent->getChildCount;
 
-    @$vert_dashes = (
-        @indent, 
-        ($sibling_count == 1 
-            ? ("        ") 
-            : ("    |   "))
+    $depth++ if $self->{include_trunk};
+
+    my $config = $self->{config};
+    my $indent = $config->{indent} ? $config->{indent} : "        ";
+    my @indents = map { $vert_dashes->[$_] || $indent } 0 .. $depth - 1;
+
+    @$vert_dashes = ( 
+        @indents,
+        (
+            $sibling_count == 1 
+                ? ($indent) 
+                : ( $config->{pipe} || "    |   " ) 
+        )
     );
 
-    if ($sibling_count == ($t->getIndex + 1)) {
-        $vert_dashes->[$depth] = "        ";
-    }
+    $vert_dashes->[$depth] = $indent
+        if ( $sibling_count == ( $t->getIndex + 1 ) );
 
-    my $node = exists $self->{config}->{node_formatter} 
-        ? $self->{config}->{node_formatter}->($t)
+    my $node = exists $config->{node_formatter}
+        ? $config->{node_formatter}->($t) 
         : $t->getNodeValue;
 
-    return ((join "" => @indent[1 .. $#indent]) 
-            . ($depth ? "    |---" : "") 
-            . $node 
-            . "\n");    
+    return ( 
+        ( join "" => @indents[ 1 .. $#indents ] ) .
+        ( $depth ? $config->{branch} || "    |---" : "" ) . $node . "\n"
+    );
 }
 
 1;
@@ -204,3 +203,5 @@ This library is free software; you can redistribute it and/or modify
 it under the same terms as Perl itself. 
 
 =cut
+
+0

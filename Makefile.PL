@@ -23,6 +23,16 @@ WriteMakefile(
         'Scalar::Util'     => 1.18,
         'Class::Throwable' => 0.10
     },
+    META_MERGE => {
+        'meta-spec' => { version => 2 },
+        resources   => {
+            repository => {
+                type => 'git',
+                url  => 'https://github.com/mziescha/tree-simple-view.git',
+                web  => 'https://github.com/mziescha/tree-simple-view',
+            },
+        }
+    },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES    => 'Tree-Simple-View-*' },
 );

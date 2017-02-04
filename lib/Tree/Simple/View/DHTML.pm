@@ -4,7 +4,7 @@ package Tree::Simple::View::DHTML;
 use strict;
 use warnings;
 
-our $VERSION = '0.17';
+our $VERSION = '0.180001';
 
 use base 'Tree::Simple::View::HTML';
 

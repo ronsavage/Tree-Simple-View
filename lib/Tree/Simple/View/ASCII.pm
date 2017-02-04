@@ -6,7 +6,7 @@ use Tree::Simple::View::Exceptions;
 
 use parent 'Tree::Simple::View';
 
-our $VERSION = '0.02';
+our $VERSION = '0.180001';
 
 sub expandPathSimple {
     my ( $self, $tree, @full_path ) = @_;
@@ -49,7 +49,6 @@ sub expandAllSimple {
 
     $output .= $self->_processNode( $self->{tree}, \@vert_dashes )
       if $self->{include_trunk};
-    use DDP;
     $self->{tree}->traverse(
         sub {
             my $t        = shift;
@@ -144,43 +143,58 @@ Tree::Simple::View::ASCII - A class for viewing Tree::Simple hierarchies in ASCI
 
 =head1 SYNOPSIS
 
-  use Tree::Simple::View::ASCII;
-  
-  my $tree_view = Tree::Simple::View::ASCII->new($tree);
-  
-  $tree_view->includeTrunk(1);
-  
-  print $tree_view->expandAll();
-  
-  # root
-  #     |---Node Level: 1
-  #     |       |---Node Level: 1.1
-  #     |       |---Node Level: 1.2
-  #     |       |       |---Node Level: 1.2.1
-  #     |       |       |---Node Level: 1.2.2
-  #     |       |---Node Level: 1.3
-  #     |---Node Level: 2
-  #     |       |---Node Level: 2.1
-  #     |       |---Node Level: 2.2
-  #     |---Node Level: 3
-  #     |       |---Node Level: 3.1
-  #     |               |---Node Level: 3.1.1
-  #     |               |---Node Level: 3.1.2
-  #     |---Node Level: 4
-  #             |---Node Level: 4.1
+    use Tree::Simple::View::ASCII;
 
-  print $tree_view->expandPath("root", "Node Level: 1", "Node Level: 1.2");
+    my $tree_view = Tree::Simple::View::ASCII->new($tree);
 
-  # root
-  #     |---Node Level: 1
-  #     |       |---Node Level: 1.1
-  #     |       |---Node Level: 1.2
-  #     |       |       |---Node Level: 1.2.1
-  #     |       |       |---Node Level: 1.2.2
-  #     |       |---Node Level: 1.3
-  #     |---Node Level: 2
-  #     |---Node Level: 3
-  #     |---Node Level: 4
+    $tree_view->includeTrunk(1);
+
+    print $tree_view->expandAll();
+
+    # root
+    #     |---Node Level: 1
+    #     |       |---Node Level: 1.1
+    #     |       |---Node Level: 1.2
+    #     |       |       |---Node Level: 1.2.1
+    #     |       |       \---Node Level: 1.2.2
+    #     |       \---Node Level: 1.3
+    #     |---Node Level: 2
+    #     |       |---Node Level: 2.1
+    #     |       \---Node Level: 2.2
+    #     |---Node Level: 3
+    #     |       \---Node Level: 3.1
+    #     |               |---Node Level: 3.1.1
+    #     |               \---Node Level: 3.1.2
+    #     \---Node Level: 4
+    #             \---Node Level: 4.1
+
+    print $tree_view->expandPath("root", "Node Level: 1", "Node Level: 1.2");
+
+    # root
+    #     |---Node Level: 1
+    #     |       |---Node Level: 1.1
+    #     |       |---Node Level: 1.2
+    #     |       |       |---Node Level: 1.2.1
+    #     |       |       \---Node Level: 1.2.2
+    #     |       \---Node Level: 1.3
+    #     |---Node Level: 2
+    #     |---Node Level: 3
+    #     \---Node Level: 4
+
+    my $tree_view = Tree::Simple::View::ASCII->new($tree, (
+        characters => [ indent => "    ", pipe => " |  ", last_branch => " \- ", branch => " |- " ]
+    ) );
+
+    # root
+    #  |- Node Level: 1
+    #  |  |- Node Level: 1.1
+    #  |  |- Node Level: 1.2
+    #  |  |  |- Node Level: 1.2.1
+    #  |  |  \- Node Level: 1.2.2
+    #  |  \- Node Level: 1.3
+    #  |- Node Level: 2
+    #  |- Node Level: 3
+    #  \- Node Level: 4
 
 =head1 DESCRIPTION
 

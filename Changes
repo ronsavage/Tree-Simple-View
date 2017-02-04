@@ -1,5 +1,12 @@
 Revision history for Perl extension Tree-Simple-View.
 
+0.180001
+  * added github repo to Makefile
+  * update Documentations for configurable characters in ASCII view
+
+0.18
+    * added configurable characters for ASCII view
+
 0.17 
     * added node_formatter support for ASCII view
 

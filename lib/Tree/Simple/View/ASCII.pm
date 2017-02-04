@@ -54,9 +54,9 @@ sub expandAllSimple {
     use DDP;
     $self->{tree}->traverse(
         sub {
-            my $t            = shift;
-            my @siblings     = $t->getParent->getAllChildren;
-            $output .= $self->_processNode( $t, \@vert_dashes,$t == $siblings[-1] ? 1 : 0 );
+            my $t        = shift;
+            my @siblings = $t->getParent->getAllChildren;
+            $output .= $self->_processNode( $t, \@vert_dashes, $t == $siblings[-1] ? 1 : 0 );
         }
     );
 

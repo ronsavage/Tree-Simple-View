@@ -50,8 +50,7 @@ sub expandAllSimple {
     my $output = '';
     my @vert_dashes;
 
-    $output .= $self->_processNode( $self->{tree}, \@vert_dashes )
-      if $self->{include_trunk};
+    $output .= $self->_processNode( $self->{tree}, \@vert_dashes ) if $self->{include_trunk};
 
     $self->{tree}->traverse(
         sub {
@@ -79,16 +78,16 @@ sub _processNode {
 
     $depth++ if $self->{include_trunk};
 
-    my $characters = $self->_merge_characters;
-    my @indents = map { $vert_dashes->[$_] || $characters->{indent} } 0 .. $depth - 1;
+    my $chars = $self->_merge_characters;
+    my @indents = map { $vert_dashes->[$_] || $chars->{indent} } 0 .. $depth - 1;
 
-    @$vert_dashes = ( @indents, ( $sibling_count == 1 ? $characters->{indent} : $characters->{pipe} ) );
-    $vert_dashes->[$depth] = $characters->{indent} if ( $sibling_count == ( $t->getIndex + 1 ) );
+    @$vert_dashes = ( @indents, ( $sibling_count == 1 ? $chars->{indent} : $chars->{pipe} ) );
+    $vert_dashes->[$depth] = $chars->{indent} if ( $sibling_count == ( $t->getIndex + 1 ) );
 
     my $node = exists $self->{config}->{node_formatter} ? $self->{config}->{node_formatter}->($t) : $t->getNodeValue;
 
     return ( ( join "" => @indents[ 1 .. $#indents ] )
-        . ( $depth ? ( $is_last ? $characters->{branch} : $characters->{childbranch} ) : "" )
+        . ( $depth ? ( $is_last ? $chars->{last_branch} : $chars->{branch} ) : "" )
           . $node
           . "\n" );
 }
@@ -102,15 +101,15 @@ Merge characters with given through constructor
 sub _merge_characters {
     my ($self) = shift;
 
-    return { pipe => '    |   ', indent => '        ', branch => '    \---', childbranch => '    |---', }
+    return { pipe => '    |   ', indent => '        ', last_branch => '    \---', branch => '    |---', }
       if ( !defined $self->{config} || !defined $self->{config}->{characters} );
 
-    my $characters = { @{ $self->{config}->{characters} } };
-    $characters->{pipe}        = '    |   ' unless $characters->{pipe};
-    $characters->{indent}      = '        ' unless $characters->{indent};
-    $characters->{branch}      = '    \---' unless $characters->{branch};
-    $characters->{childbranch} = '    |---' unless $characters->{childbranch};
-    return $characters;
+    my $chars = { @{ $self->{config}->{characters} } };
+    $chars->{pipe}        = '    |   ' unless $chars->{pipe};
+    $chars->{indent}      = '        ' unless $chars->{indent};
+    $chars->{last_branch} = '    \---' unless $chars->{last_branch};
+    $chars->{branch}      = '    |---' unless $chars->{branch};
+    return $chars;
 }
 
 1;

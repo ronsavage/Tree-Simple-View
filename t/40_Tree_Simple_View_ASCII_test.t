@@ -102,8 +102,8 @@ Node Level: 1
     |---Node Level: 1.1
     |---Node Level: 1.2
     |       |---Node Level: 1.2.1
-    |       |---Node Level: 1.2.2
-    |---Node Level: 1.3
+    |       \\---Node Level: 1.2.2
+    \\---Node Level: 1.3
 Node Level: 2
 Node Level: 3
 Node Level: 4
@@ -127,11 +127,11 @@ root
     |       |---Node Level: 1.1
     |       |---Node Level: 1.2
     |       |       |---Node Level: 1.2.1
-    |       |       |---Node Level: 1.2.2
-    |       |---Node Level: 1.3
+    |       |       \\---Node Level: 1.2.2
+    |       \\---Node Level: 1.3
     |---Node Level: 2
     |---Node Level: 3
-    |---Node Level: 4
+    \\---Node Level: 4
 EXPECTED
 
     is( $output, $expected, '... got what we expected' );

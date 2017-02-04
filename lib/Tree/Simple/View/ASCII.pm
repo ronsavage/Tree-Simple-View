@@ -17,32 +17,31 @@ sub expandPathSimple {
 
     my $traversal = sub {
         my ( $t, $redo, $current_path, @path ) = @_;
-        $output .= $self->_processNode( $t, \@vert_dashes )
-          unless $t->isRoot;
-        foreach my $child ( $t->getAllChildren() ) {
-            if ( defined $current_path && $self->_compareNodeToPath( $current_path, $child ) ) {
-                $output .= $redo->( $child, $redo, @path );
-            }
-            else {
-                $output .= $self->_processNode( $child, \@vert_dashes );
-            }
+        $output .= $self->_processNode( $t, \@vert_dashes ) unless $t->isRoot;
+        my @children = $t->getAllChildren;
+        for my $i ( 0 .. $#children ) {
+            my $subcat  = $children[$i];
+            my $is_last = $i == $#children;
+            $output .= $self->_handle_child( $subcat, $redo, \@path, $current_path, \@vert_dashes, $is_last );
         }
     };
 
-    $output .= $self->_processNode( $tree, \@vert_dashes )
-      if $self->{include_trunk};
+    $output .= $self->_processNode( $tree, \@vert_dashes ) if $self->{include_trunk};
 
-    if (   $self->{include_trunk}
-        && defined $full_path[0]
-        && $self->_compareNodeToPath( $full_path[0], $tree ) )
-    {
-        shift @full_path;
-    }
+    shift @full_path
+      if ( $self->{include_trunk} && defined $full_path[0] && $self->_compareNodeToPath( $full_path[0], $tree ) );
 
     # Its the U combinator baby!
     $traversal->( $tree, $traversal, @full_path );
 
     return $output;
+}
+
+sub _handle_child {
+    my ( $self, $child, $redo, $path, $current_path, $vert_dashes, $is_last ) = @_;
+    return $redo->( $child, $redo, @$path )
+      if ( defined $current_path && $self->_compareNodeToPath( $current_path, $child ) );
+    return $self->_processNode( $child, $vert_dashes, $is_last );
 }
 
 sub expandAllSimple {
@@ -74,9 +73,8 @@ sub expandPathComplex {
 *expandAllComplex = \&expandAllSimple;
 
 sub _processNode {
-    my ( $self, $t, $vert_dashes ) = @_;
+    my ( $self, $t, $vert_dashes, $is_last ) = @_;
     my $depth = $t->getDepth;
-
     my $sibling_count = $t->isRoot ? 1 : $t->getParent->getChildCount;
 
     $depth++ if $self->{include_trunk};
@@ -84,17 +82,15 @@ sub _processNode {
     my $characters = $self->_merge_characters;
     my @indents = map { $vert_dashes->[$_] || $characters->{indent} } 0 .. $depth - 1;
 
-    @$vert_dashes =
-      ( @indents, ( $sibling_count == 1 ? $characters->{indent} : $characters->{pipe} ) );
+    @$vert_dashes = ( @indents, ( $sibling_count == 1 ? $characters->{indent} : $characters->{pipe} ) );
+    $vert_dashes->[$depth] = $characters->{indent} if ( $sibling_count == ( $t->getIndex + 1 ) );
 
-    $vert_dashes->[$depth] = $characters->{indent}
-      if ( $sibling_count == ( $t->getIndex + 1 ) );
+    my $node = exists $self->{config}->{node_formatter} ? $self->{config}->{node_formatter}->($t) : $t->getNodeValue;
 
-    my $node =
-      exists $self->{config}->{node_formatter} ? $self->{config}->{node_formatter}->($t) : $t->getNodeValue;
-
-    return (
-        ( join "" => @indents[ 1 .. $#indents ] ) . ( $depth ? $characters->{branch} : "" ) . $node . "\n" );
+    return ( ( join "" => @indents[ 1 .. $#indents ] )
+        . ( $depth ? ( $is_last ? $characters->{branch} : $characters->{childbranch} ) : "" )
+          . $node
+          . "\n" );
 }
 
 =head2 _merge_characters
@@ -106,13 +102,14 @@ Merge characters with given through constructor
 sub _merge_characters {
     my ($self) = shift;
 
-    return { pipe => '    |   ', indent => '        ', branch => '    |---', }
+    return { pipe => '    |   ', indent => '        ', branch => '    \---', childbranch => '    |---', }
       if ( !defined $self->{config} || !defined $self->{config}->{characters} );
 
     my $characters = { @{ $self->{config}->{characters} } };
-    $characters->{pipe}   = '    |   ' unless $characters->{pipe};
-    $characters->{indent} = '        ' unless $characters->{indent};
-    $characters->{branch} = '    |---' unless $characters->{branch};
+    $characters->{pipe}        = '    |   ' unless $characters->{pipe};
+    $characters->{indent}      = '        ' unless $characters->{indent};
+    $characters->{branch}      = '    \---' unless $characters->{branch};
+    $characters->{childbranch} = '    |---' unless $characters->{childbranch};
     return $characters;
 }
 

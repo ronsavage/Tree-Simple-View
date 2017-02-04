@@ -1,4 +1,3 @@
-
 package Tree::Simple::View::ASCII;
 
 use strict;
@@ -22,26 +21,24 @@ sub expandPathSimple {
         for my $i ( 0 .. $#children ) {
             my $subcat  = $children[$i];
             my $is_last = $i == $#children;
-            $output .= $self->_handle_child( $subcat, $redo, \@path, $current_path, \@vert_dashes, $is_last );
+            $output .=
+              $self->_handle_child( $subcat, $redo, \@path, $current_path,
+                \@vert_dashes, $is_last );
         }
     };
 
-    $output .= $self->_processNode( $tree, \@vert_dashes ) if $self->{include_trunk};
+    $output .= $self->_processNode( $tree, \@vert_dashes )
+      if $self->{include_trunk};
 
     shift @full_path
-      if ( $self->{include_trunk} && defined $full_path[0] && $self->_compareNodeToPath( $full_path[0], $tree ) );
+      if ( $self->{include_trunk}
+        && defined $full_path[0]
+        && $self->_compareNodeToPath( $full_path[0], $tree ) );
 
     # Its the U combinator baby!
     $traversal->( $tree, $traversal, @full_path );
 
     return $output;
-}
-
-sub _handle_child {
-    my ( $self, $child, $redo, $path, $current_path, $vert_dashes, $is_last ) = @_;
-    return $redo->( $child, $redo, @$path )
-      if ( defined $current_path && $self->_compareNodeToPath( $current_path, $child ) );
-    return $self->_processNode( $child, $vert_dashes, $is_last );
 }
 
 sub expandAllSimple {
@@ -50,13 +47,16 @@ sub expandAllSimple {
     my $output = '';
     my @vert_dashes;
 
-    $output .= $self->_processNode( $self->{tree}, \@vert_dashes ) if $self->{include_trunk};
+    $output .= $self->_processNode( $self->{tree}, \@vert_dashes )
+      if $self->{include_trunk};
     use DDP;
     $self->{tree}->traverse(
         sub {
             my $t        = shift;
             my @siblings = $t->getParent->getAllChildren;
-            $output .= $self->_processNode( $t, \@vert_dashes, $t == $siblings[-1] ? 1 : 0 );
+            $output .=
+              $self->_processNode( $t, \@vert_dashes,
+                $t == $siblings[-1] ? 1 : 0 );
         }
     );
 
@@ -80,29 +80,48 @@ sub _processNode {
     $depth++ if $self->{include_trunk};
 
     my $chars = $self->_merge_characters;
-    my @indents = map { $vert_dashes->[$_] || $chars->{indent} } 0 .. $depth - 1;
+    my @indents =
+      map { $vert_dashes->[$_] || $chars->{indent} } 0 .. $depth - 1;
 
-    @$vert_dashes = ( @indents, ( $sibling_count == 1 ? $chars->{indent} : $chars->{pipe} ) );
-    $vert_dashes->[$depth] = $chars->{indent} if ( $sibling_count == ( $t->getIndex + 1 ) );
+    @$vert_dashes =
+      ( @indents, ( $sibling_count == 1 ? $chars->{indent} : $chars->{pipe} ) );
+    $vert_dashes->[$depth] = $chars->{indent}
+      if ( $sibling_count == ( $t->getIndex + 1 ) );
 
-    my $node = exists $self->{config}->{node_formatter} ? $self->{config}->{node_formatter}->($t) : $t->getNodeValue;
+    my $node =
+      exists $self->{config}->{node_formatter}
+      ? $self->{config}->{node_formatter}->($t)
+      : $t->getNodeValue;
 
-    return ( ( join "" => @indents[ 1 .. $#indents ] )
-        . ( $depth ? ( $is_last ? $chars->{last_branch} : $chars->{branch} ) : "" )
-          . $node
-          . "\n" );
+    return (
+        ( join "" => @indents[ 1 .. $#indents ] )
+        . (
+            $depth
+            ? ( $is_last ? $chars->{last_branch} : $chars->{branch} )
+            : ""
+          )
+          . $node . "\n"
+    );
 }
 
-=head2 _merge_characters
-
-Merge characters with given through constructor
-
-=cut
+sub _handle_child {
+    my ( $self, $child, $redo, $path, $current_path, $vert_dashes, $is_last ) =
+      @_;
+    return $redo->( $child, $redo, @$path )
+      if ( defined $current_path
+        && $self->_compareNodeToPath( $current_path, $child ) );
+    return $self->_processNode( $child, $vert_dashes, $is_last );
+}
 
 sub _merge_characters {
     my ($self) = shift;
 
-    return { pipe => '    |   ', indent => '        ', last_branch => '    \---', branch => '    |---', }
+    return {
+        pipe        => '    |   ',
+        indent      => '        ',
+        last_branch => '    \---',
+        branch      => '    |---',
+      }
       if ( !defined $self->{config} || !defined $self->{config}->{characters} );
 
     my $chars = { @{ $self->{config}->{characters} } };

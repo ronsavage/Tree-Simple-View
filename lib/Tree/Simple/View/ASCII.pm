@@ -51,11 +51,12 @@ sub expandAllSimple {
     my @vert_dashes;
 
     $output .= $self->_processNode( $self->{tree}, \@vert_dashes ) if $self->{include_trunk};
-
+    use DDP;
     $self->{tree}->traverse(
         sub {
-            my $t = shift;
-            $output .= $self->_processNode( $t, \@vert_dashes );
+            my $t            = shift;
+            my @siblings     = $t->getParent->getAllChildren;
+            $output .= $self->_processNode( $t, \@vert_dashes,$t == $siblings[-1] ? 1 : 0 );
         }
     );
 

@@ -68,8 +68,8 @@ if ($ExtUtils::MakeMaker::VERSION ge '6.46')
 			repository =>
 			{
 				type => 'git',
-				url  => 'https://github.com/mziescha/tree-simple-view.git',
-				web  => 'https://github.com/mziescha/tree-simple-view',
+				url  => 'https://github.com/rsavage/Tree-Simple-View.git',
+				web  => 'https://github.com/mziescha/Tree-Simple-View',
 			},
 		},
 	};

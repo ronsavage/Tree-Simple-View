@@ -349,7 +349,7 @@ am not sure.
 
 L<https://github.com/mziescha/tree-simple-view>.
 
-Ron Savage has a fork of the above at L<https://github.com/rsavage/tree-simple-view>.
+Ron Savage has a fork of the above at L<https://github.com/rsavage/Tree-Simple-View>.
 
 =head1 AUTHOR
 

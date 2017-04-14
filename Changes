@@ -4,6 +4,8 @@ Revision history for Perl extension Tree-Simple-View.
 	- Add repostory section to the pod of Tree::Simple::View.
 	- Move t/manifest.t, t/pod_coverage.t and t/pod.t to xt/author.
 	- Add Changelog.ini.
+	- Add .gitignore, LICENSE.
+	- Modernize MANIFEST.SKIP.
 
 
 0.180001

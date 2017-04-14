@@ -14,9 +14,10 @@ use constant OPEN_TAG  => 1;
 use constant CLOSE_TAG => 2;
 use constant EXPANDED  => 3;
 
-my %tags = (
-    xhtml => { OL => 'ol', UL => 'ul', LI => 'li', STYLE => q{ style='}, CLASS => q{ class='} },
-    html  => { OL => 'OL', UL => 'UL', LI => 'LI', STYLE => q{ STYLE='}, CLASS => q{ CLASS='} },
+my(%tags) =
+(
+	xhtml	=> { OL => 'ol', UL => 'ul', LI => 'li', STYLE => q{ style='}, CLASS => q{ class='} },
+	html	=> { OL => 'OL', UL => 'UL', LI => 'LI', STYLE => q{ STYLE='}, CLASS => q{ CLASS='} },
 );
 
 ## public methods
@@ -135,7 +136,7 @@ sub expandAllComplex {
             push @results => ($list_item_func->($t));
         }
         else {
-            push @results => ($list_item_func->($t, EXPANDED));
+            push @results => $list_item_func->($t, EXPANDED);
         }
         push @results => $list_func->(OPEN_TAG) unless $t->isLeaf();
         $last_depth = $current_depth;
@@ -188,10 +189,11 @@ use constant LIST_FUNCTION_CODE_STRING => q|
 
 use constant LIST_ITEM_FUNCTION_CODE_STRING  => q|;
     sub {
-        my ($t, $is_expanded) = @_;
-        my $item_css = $list_item_css;
-        $item_css = $expanded_item_css if ($is_expanded && $expanded_item_css);
-        return '<'.$config{tags}->{LI}.$item_css.'>' . (($node_formatter) ? $node_formatter->($t) : $t->getNodeValue()) . '</'.$config{tags}->{LI}.'>';
+		my($t, $is_expanded)	= @_;
+		my($item_css)			= $list_item_css;
+		$item_css				= $expanded_item_css if ($is_expanded && $expanded_item_css);
+		my($node)				= $node_formatter ? $node_formatter->($t) : $t->getNodeValue;
+		return "<${$config{tags} }{LI}$item_css>$node</${$config{tags} }{LI}>";
     }
 |;
 

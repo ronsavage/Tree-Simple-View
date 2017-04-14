@@ -28,10 +28,10 @@ sub _init {
     my ($self, $tree, %config) = @_;
     (blessed($tree) && $tree->isa("Tree::Simple"))
         || throw Tree::Simple::View::InsufficientArguments "tree argument must be a Tree::Simple object";
-    $self->{tree}                 = $tree;
-    $self->{config}               = \%config if %config;
-    $self->{include_trunk}        = 0;
-    $self->{path_comparison_func} = undef;
+    $self->{tree}					= $tree;
+    $self->{config}					= \%config if %config;
+    $self->{include_trunk}			= 0;
+    $self->{path_comparison_func}	= undef;
 }
 
 sub getTree   { (shift)->{tree}   }
@@ -61,9 +61,9 @@ sub expandPathSimple  { throw Tree::Simple::View::AbstractMethod "Method Not Imp
 sub expandPathComplex { throw Tree::Simple::View::AbstractMethod "Method Not Implemented" }
 
 sub expandAll {
-    my ($self) = @_;
-    return $self->expandAllComplex($self->{config}) if (keys %{$self->{config}});
-    return $self->expandAllSimple();
+	my ($self) = @_;
+	return $self->expandAllComplex($self->{config}) if (keys %{$self->{config}});
+	return $self->expandAllSimple();
 }
 
 # override these method

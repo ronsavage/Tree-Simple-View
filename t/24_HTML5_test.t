@@ -33,7 +33,7 @@ can_ok("Tree::Simple::View::HTML", 'new');
 can_ok("Tree::Simple::View::HTML", 'expandAll');
 
 {
-	my($tree_view) = Tree::Simple::View::HTML->new($tree);
+	my($tree_view) = Tree::Simple::View::HTML->new($tree, html5 => 1);
 
 	isa_ok($tree_view, 'Tree::Simple::View::HTML');
 
@@ -62,7 +62,7 @@ EXPECTED
 }
 
 {
-	my($tree_view) = Tree::Simple::View::HTML->new($tree);
+	my($tree_view) = Tree::Simple::View::HTML->new($tree, html5 => 1);
 
 	isa_ok($tree_view, 'Tree::Simple::View::HTML');
 

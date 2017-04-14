@@ -28,26 +28,26 @@ sub expandPathSimple  {
     # include trunk has been turned on then, this is
     # the first time we have been called, so ...
     if ($self->{include_trunk} && (caller(1))[3] !~ /expandPathSimple$/) {
-        push @results => "<UL>";
-        push @results => ("<LI>" . $tree->getNodeValue() . "</LI>");
+        push @results => '<UL>';
+        push @results => ('<LI>' . $tree->getNodeValue() . '</LI>');
         # now recurse but dont change any of the args,
         # (if we are supposed to that is, based on the path)
         push @results => ($self->expandPathSimple($tree, @path))
             if (defined $current_path && $tree->getNodeValue() eq $current_path);
-        push @results => "</UL>";
+        push @results => '</UL>';
     }
     else {
-        push @results => "<UL>";
+        push @results => '<UL>';
         foreach my $child ($tree->getAllChildren()) {
             if (defined $current_path && $self->_compareNodeToPath($current_path, $child)) {
-                push @results => ("<LI>" . $child->getNodeValue() . "</LI>");
+                push @results => ('<LI>' . $child->getNodeValue() . '</LI>');
                 push @results => ($self->expandPathSimple($child, @path));
             }
             else {
-                push @results => ("<LI>" . $child->getNodeValue() . "</LI>");
+                push @results => ('<LI>' . $child->getNodeValue() . '</LI>');
             }
         }
-        push @results => "</UL>";
+        push @results => '</UL>';
     }
     return (join "\n" => @results);
 }
@@ -100,22 +100,22 @@ sub expandPathComplex {
 
 sub expandAllSimple  {
     my ($self) = @_;
-    my @results = ("<UL>");
+    my @results = ('<UL>');
     my $root_depth = $self->{tree}->getDepth() + 1;
     my $last_depth = -1;
     my $traversal_sub = sub {
         my ($t) = @_;
         my $current_depth = $t->getDepth();
-        push @results => ("</UL>" x ($last_depth - $current_depth)) if ($last_depth > $current_depth);
-        push @results => ("<LI>" . $t->getNodeValue() . "</LI>");
-        push @results => "<UL>" unless $t->isLeaf();
+        push @results => ('</UL>' x ($last_depth - $current_depth)) if ($last_depth > $current_depth);
+        push @results => ('<LI>' . $t->getNodeValue() . '</LI>');
+        push @results => '<UL>' unless $t->isLeaf();
         $last_depth = $current_depth;
     };
     $traversal_sub->($self->{tree}) if $self->{include_trunk};
     $self->{tree}->traverse($traversal_sub);
     $last_depth -= $root_depth;
     $last_depth++ if $self->{include_trunk};
-    push @results => ("</UL>" x ($last_depth + 1));
+    push @results => ('</UL>' x ($last_depth + 1));
     return (join "\n" => @results);
 }
 
@@ -162,16 +162,16 @@ sub _processConfig {
         $config{ tags } = $tags{ html };
     }
     elsif ( !exists( $tags{ $config{ tag_style } }) ) {
-        throw Tree::Simple::View::CompilationFailed "unknown tag_style $config{ tag_style }";
+        throw Tree::Simple::View::CompilationFailed "Unknown tag_style $config{ tag_style }";
     }
     else {
         $config{ tags } = $tags{ $config{ tag_style } };
     }
 
     my $list_func = $self->_buildListFunction(%config)
-        || throw Tree::Simple::View::CompilationFailed "list function didn't compile", $@;
+        || throw Tree::Simple::View::CompilationFailed "List function didn't compile", $@;
     my $list_item_func  = $self->_buildListItemFunction(%config)
-    	|| throw Tree::Simple::View::CompilationFailed "list item function didn't compile", $@;
+    	|| throw Tree::Simple::View::CompilationFailed "List item function didn't compile", $@;
 
     return ($list_func, $list_item_func);
 }
@@ -199,10 +199,10 @@ use constant LIST_ITEM_FUNCTION_CODE_STRING  => q|;
 sub _processListConfig {
     my ($self, %config) = @_;
 
-    my $list_type = "UL";
-    $list_type = (($config{list_type} eq "unordered") ? "UL" : "OL") if exists $config{list_type};
+    my $list_type = 'UL';
+    $list_type = (($config{list_type} eq 'unordered') ? 'UL' : 'OL') if exists $config{list_type};
 
-    my $list_css = "";
+    my $list_css = '';
     if (exists $config{list_css}) {
         # make sure we have a proper ';' at the end
         # of the CSS code here, it is needed by the
@@ -210,7 +210,7 @@ sub _processListConfig {
         # to it, no other element requires this so far,
         # but if it did, this same idiom could be reused
         my $_list_css = $config{list_css};
-        $_list_css .= ";" unless ($_list_css =~ /\;$/);
+        $_list_css .= ';' unless ($_list_css =~ /\;$/);
         $list_css = $config{tags}->{STYLE} . "${_list_css}'";
     }
     elsif (exists $config{list_css_class}) {
@@ -234,7 +234,7 @@ sub _buildListFunction {
 sub _processListItemConfig {
     my ($self, %config) = @_;
 
-    my $list_item_css = "";
+    my $list_item_css = '';
     if (exists $config{list_item_css}) {
         $list_item_css = $config{tags}->{STYLE} . $config{list_item_css} . "'";
     }
@@ -243,7 +243,7 @@ sub _processListItemConfig {
     }
     # otherwise do nothing and stick with default
 
-    my $expanded_item_css = "";
+    my $expanded_item_css = '';
     if (exists $config{expanded_item_css}) {
         $expanded_item_css = $config{tags}->{STYLE} . $config{expanded_item_css} . "'";
     }
@@ -254,7 +254,7 @@ sub _processListItemConfig {
 
     my $node_formatter;
     $node_formatter = $config{node_formatter}
-        if (exists $config{node_formatter} && ref($config{node_formatter}) eq "CODE");
+        if (exists $config{node_formatter} && ref($config{node_formatter}) eq 'CODE');
 
     return ($list_item_css, $expanded_item_css, $node_formatter);
 }
@@ -289,27 +289,27 @@ Tree::Simple::View::HTML - A class for viewing Tree::Simple hierarchies in HTML
 
   # use the CSS properties
   my $tree_view = Tree::Simple::View::HTML->new($tree => (
-                                list_type  => "ordered",
-                                list_css => "list-style: circle;",
-                                list_item_css => "font-family: courier;",
-                                expanded_item_css => "font-family: courier; font-weight: bold",
+                                list_type  => 'ordered',
+                                list_css => 'list-style: circle;',
+                                list_item_css => 'font-family: courier;',
+                                expanded_item_css => 'font-family: courier; font-weight: bold',
                                 ));
 
   # use the CSS classes
   my $tree_view = Tree::Simple::View::HTML->new($tree => (
-                                list_css_class => "myListClass",
-                                list_item_css_class => "myListItemClass",
-                                expanded_item_css_class => "myExpandedListItemClass",
+                                list_css_class => 'myListClass',
+                                list_item_css_class => 'myListItemClass',
+                                expanded_item_css_class => 'myExpandedListItemClass',
                                 ));
 
   # mix the CSS properties and CSS classes
   my $tree_view = Tree::Simple::View::HTML->new($tree => (
-                                list_css => "list-style: circle;",
-                                list_item_css => "font-family: courier;",
-                                expanded_item_css_class => "myExpandedListItemClass",
+                                list_css => 'list-style: circle;',
+                                list_item_css => 'font-family: courier;',
+                                expanded_item_css_class => 'myExpandedListItemClass',
                                 node_formatter => sub {
                                     my ($tree) = @_;
-                                    return "<B>" . $tree->getNodeValue()->description() . "</B>";
+                                    return '<B>' . $tree->getNodeValue()->description() . '</B>';
                                     }
                                 ));
 
@@ -318,13 +318,13 @@ Tree::Simple::View::HTML - A class for viewing Tree::Simple hierarchies in HTML
   print $tree_view->expandAll();
 
   # print out the tree expanded along a given path (see below for details)
-  print $tree_view->expandPath("Root", "Child", "GrandChild");
+  print $tree_view->expandPath('Root', 'Child', 'GrandChild');
 
 =head1 DESCRIPTION
 
 This is a class for use with Tree::Simple object hierarchies to serve as a means of
-displaying them in HTML. It is the "View", while the Tree::Simple object hierarchy
-would be the "Model" in your standard Model-View-Controller paradigm.
+displaying them in HTML. It is the 'View', while the Tree::Simple object hierarchy
+would be the 'Model' in your standard Model-View-Controller paradigm.
 
 This class outputs fairly vanilla HTML in its simpliest configuration, suitable for
 both legacy browsers and text-based browsers. Through the use of various configuration
@@ -480,7 +480,7 @@ by C<expandPath>. This method is optimized since it does not need to process any
 configuration, but just as the name implies, it's output is simple.
 
 This method can also be used for another purpose, which is to bypass a previously
-specified configuration and use the base "simple" configuration instead.
+specified configuration and use the base 'simple' configuration instead.
 
 =item B<expandPathComplex ($tree, $config, @path)>
 
@@ -509,7 +509,7 @@ by C<expandAll>. This method too is optimized since it does not need to process
 any configuration.
 
 This method as well can also be used to bypass a previously specified configuration
-and use the base "simple" configuration instead.
+and use the base 'simple' configuration instead.
 
 =item B<expandAllComplex ($config)>
 
@@ -534,15 +534,15 @@ I would like to be able to set any of my css properties as an array, which would
 essentially allow for depth-based css values. For instance, something like this:
 
   list_css => [
-      "font-size: 14pt;",
-      "font-size: 12pt;",
-      "font-size: 10pt;"
+      'font-size: 14pt;',
+      'font-size: 12pt;',
+      'font-size: 10pt;'
       ];
 
 This would result in the first level of the tree having a font-size of 14 points,
 the second level would have a font-size of 12 points, then all other levels past
 the second level (third and beyond) would have a font-size of 10 points. Of course
-if a fourth element were added to this array (ex: "font-size: 8pt;"), then the third
+if a fourth element were added to this array (ex: 'font-size: 8pt;'), then the third
 level would have a font-size of 10 points, and all others past that level would
 have the font-size of 8 points.
 

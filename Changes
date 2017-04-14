@@ -11,6 +11,7 @@ Revision history for Perl extension Tree-Simple-View.
 	- Update SEE ALSO in pod.
 	- Standardize dates in this file.
 	- Add t/24_HTML5_test.t to test RT#121099.
+	- Replace most double-quotes with single-quotes to reduce visual clutter.
 
 0.180001  2017-02-05T12:00:00
   * added github repo to Makefile

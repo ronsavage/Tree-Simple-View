@@ -147,7 +147,7 @@ A basic accessor to reach the underlying configuration hash.
 This controls the getting and setting (through the optional C<$boolean> argument) of the
 option to include the tree's trunk in the output. Many times, the trunk is not actually
 part of the tree, but simply a root from which all the branches spring. However, on
-occasion, it might be nessecary to view a sub-tree, in which case, the trunk is likely
+occasion, it might be necessary to view a sub-tree, in which case, the trunk is likely
 intended to be part of the output. This option defaults to off.
 
 =item B<setPathComparisonFunction ($CODE)>
@@ -298,21 +298,27 @@ let me know and I will add it.
 
 =over 4
 
-=item B<Data::TreeDumper>
+=item L<Data::TreeDumper>
 
 This module is an alternative to Data::Dumper for dumping out any type of data structures.
 As the author points out, the output of Data::Dumper when dealing with tree structures can
 be difficult to read at best. This module solves that problem by dumping a much more readable
 and understandable output specially for tree structures. Data::TreeDumper has many options
 for output, including custom filters and coloring. I have been working with this module's author
-and we have been sharing code. Data::TreeDumper can output Tree::Simple objects
+and we have been sharing code. Data::TreeDumper can output L<Tree::Simple> objects
 (L<http://search.cpan.org/~nkh/Data-TreeDumper-0.15/TreeDumper.pm#Structure_replacement>).
 This gives Tree::Simple the ability to utilize the ASCII/ANSI output  styles of Data::TreeDumper.
 Nadim has used some of the code from  Tree::Simple::View to add DHTML output to Data::TreeDumper.
 The DHTML output can be without tree-lines as for Tree::Simple::View or with tree-lines as with
 Data::TreeDumper.
 
-=item B<HTML::PopupTreeSelect>
+=item L<Data::RenderAsTree>
+
+Abstract: Render any data structure as an object of type Tree::DAG_Node.
+
+Similar to L<Data::TreeDumper>
+
+=item L<HTML::PopupTreeSelect>
 
 This module implements a DHTML "pop-up" dialog which contains an expand-collapse tree, which
 can be used for selecting an item from a hierarchy. It looks to me to be very configurable
@@ -320,17 +326,12 @@ and have all its bases covered, right down to handling some of the uglies of
 cross-browser/cross-platform DHTML. However it is really for a very specific purpose, and
 not for general tree display like this module.
 
-=item B<HTML::TreeStructured>
+=item L<HTML::TreeStructured>
 
 This module actually seems to do something very similar to these modules, but to be honest,
 the documentation is very, very sparse, and so I am not really sure how to go about using it.
 From a quick read of the code it seems to use HTML::Template as its base, but after that I
 am not sure.
-
-=item B<CGI::Explorer>
-
-This module is similar to the HTML::PopupTreeSelect, in that it is intended for a more
-singular purpose. This module implements a Windows-style explorer tree.
 
 =back
 

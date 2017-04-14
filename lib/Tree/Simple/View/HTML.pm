@@ -146,6 +146,7 @@ sub expandAllComplex {
     $last_depth -= $root_depth;
     $last_depth++ if $self->{include_trunk};
     push @results => ($list_func->(CLOSE_TAG) x ($last_depth + 1));
+
     return (join "\n" => @results);
 }
 
@@ -192,8 +193,9 @@ use constant LIST_ITEM_FUNCTION_CODE_STRING  => q|;
 		my($t, $is_expanded)	= @_;
 		my($item_css)			= $list_item_css;
 		$item_css				= $expanded_item_css if ($is_expanded && $expanded_item_css);
-		my($node)				= $node_formatter ? $node_formatter->($t) : $t->getNodeValue;
-		return "<${$config{tags} }{LI}$item_css>$node</${$config{tags} }{LI}>";
+		my($node_value)			= $node_formatter ? $node_formatter->($t) : $t->getNodeValue;
+
+		return  "<${$config{tags} }{LI}$item_css>$node_value</${$config{tags} }{LI}>";
     }
 |;
 
@@ -258,13 +260,13 @@ sub _processListItemConfig {
     $node_formatter = $config{node_formatter}
         if (exists $config{node_formatter} && ref($config{node_formatter}) eq 'CODE');
 
-    return ($list_item_css, $expanded_item_css, $node_formatter);
+    return ($list_item_css, $expanded_item_css, $node_formatter, $config{html5});
 }
 
 sub _buildListItemFunction {
     my ($self, %config) = @_;
     # process the configuration directives
-    my ($list_item_css, $expanded_item_css, $node_formatter) = $self->_processListItemConfig(%config);
+    my ($list_item_css, $expanded_item_css, $node_formatter, $html5) = $self->_processListItemConfig(%config);
     # now compile the subroutine in the current environment
     return eval $self->LIST_ITEM_FUNCTION_CODE_STRING;
 }

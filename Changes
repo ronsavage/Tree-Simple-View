@@ -10,6 +10,7 @@ Revision history for Perl extension Tree-Simple-View.
 	- Add various modules to the pre-reqs in Makefile.PL.
 	- Update SEE ALSO in pod.
 	- Standardize dates in this file.
+	- Add t/24_HTML5_test.t to test RT#121099.
 
 0.180001  2017-02-05T12:00:00
   * added github repo to Makefile

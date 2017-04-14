@@ -4,7 +4,7 @@ package Tree::Simple::View::HTML;
 use strict;
 use warnings;
 
-our $VERSION = '0.180001';
+our $VERSION = '0.180002';
 
 use base 'Tree::Simple::View';
 
@@ -21,20 +21,20 @@ my %tags = (
 
 ## public methods
 
-sub expandPathSimple  { 
+sub expandPathSimple  {
     my ($self, $tree, $current_path, @path) = @_;
     my @results;
-    # if we were not called from this routine, and 
-    # include trunk has been turned on then, this is 
+    # if we were not called from this routine, and
+    # include trunk has been turned on then, this is
     # the first time we have been called, so ...
-    if ($self->{include_trunk} && (caller(1))[3] !~ /expandPathSimple$/) {    
+    if ($self->{include_trunk} && (caller(1))[3] !~ /expandPathSimple$/) {
         push @results => "<UL>";
-        push @results => ("<LI>" . $tree->getNodeValue() . "</LI>");     
+        push @results => ("<LI>" . $tree->getNodeValue() . "</LI>");
         # now recurse but dont change any of the args,
-        # (if we are supposed to that is, based on the path)   
+        # (if we are supposed to that is, based on the path)
         push @results => ($self->expandPathSimple($tree, @path))
-            if (defined $current_path && $tree->getNodeValue() eq $current_path); 
-        push @results => "</UL>";               
+            if (defined $current_path && $tree->getNodeValue() eq $current_path);
+        push @results => "</UL>";
     }
     else {
         push @results => "<UL>";
@@ -49,14 +49,14 @@ sub expandPathSimple  {
         }
         push @results => "</UL>";
     }
-    return (join "\n" => @results);        
+    return (join "\n" => @results);
 }
 
 sub expandPathComplex {
     my ($self, $tree, $config, $current_path, @path) = @_;
     # get the config
-    my ($list_func, $list_item_func) = $self->_processConfig($config);  
-    
+    my ($list_func, $list_item_func) = $self->_processConfig($config);
+
     # use the helper function to recurse
     my $_expandPathComplex = sub {
         my ($self_func, $list_func, $list_item_func, $tree, $current_path, @path) = @_;
@@ -76,32 +76,32 @@ sub expandPathComplex {
             }
         }
         push @results => ($list_func->(CLOSE_TAG));
-        return (join "\n" => @results);   
+        return (join "\n" => @results);
     };
-    
+
     my @results;
-    if ($self->{include_trunk}) {    
+    if ($self->{include_trunk}) {
         push @results => ($list_func->(OPEN_TAG));
-        if (defined $current_path && $self->_compareNodeToPath($current_path, $tree)) {      
-            push @results => ($list_item_func->($tree, EXPANDED));     
+        if (defined $current_path && $self->_compareNodeToPath($current_path, $tree)) {
+            push @results => ($list_item_func->($tree, EXPANDED));
             push @results => $_expandPathComplex->($_expandPathComplex, $list_func, $list_item_func, $tree, @path);
         }
         else {
-           push @results => ($list_item_func->($tree));     
+           push @results => ($list_item_func->($tree));
         }
-        push @results => ($list_func->(CLOSE_TAG));             
-    } 
+        push @results => ($list_func->(CLOSE_TAG));
+    }
     else {
-        push @results => $_expandPathComplex->($_expandPathComplex, $list_func, $list_item_func, $tree, $current_path, @path);            
-    }    
-    
-    return (join "\n" => @results);   
+        push @results => $_expandPathComplex->($_expandPathComplex, $list_func, $list_item_func, $tree, $current_path, @path);
+    }
+
+    return (join "\n" => @results);
 }
 
 sub expandAllSimple  {
-    my ($self) = @_;   
+    my ($self) = @_;
     my @results = ("<UL>");
-    my $root_depth = $self->{tree}->getDepth() + 1;    
+    my $root_depth = $self->{tree}->getDepth() + 1;
     my $last_depth = -1;
     my $traversal_sub = sub {
         my ($t) = @_;
@@ -113,19 +113,19 @@ sub expandAllSimple  {
     };
     $traversal_sub->($self->{tree}) if $self->{include_trunk};
     $self->{tree}->traverse($traversal_sub);
-    $last_depth -= $root_depth;    
-    $last_depth++ if $self->{include_trunk}; 
-    push @results => ("</UL>" x ($last_depth + 1)); 
+    $last_depth -= $root_depth;
+    $last_depth++ if $self->{include_trunk};
+    push @results => ("</UL>" x ($last_depth + 1));
     return (join "\n" => @results);
 }
 
 sub expandAllComplex {
     my ($self, $config) = @_;
-    
-    my ($list_func, $list_item_func) = $self->_processConfig($config);   
-    
+
+    my ($list_func, $list_item_func) = $self->_processConfig($config);
+
     my @results = $list_func->(OPEN_TAG);
-    my $root_depth = $self->{tree}->getDepth() + 1;    
+    my $root_depth = $self->{tree}->getDepth() + 1;
     my $last_depth = -1;
     my $traversal_sub = sub {
         my ($t) = @_;
@@ -142,9 +142,9 @@ sub expandAllComplex {
     };
     $traversal_sub->($self->{tree}) if $self->{include_trunk};
     $self->{tree}->traverse($traversal_sub);
-    $last_depth -= $root_depth;    
-    $last_depth++ if $self->{include_trunk};  
-    push @results => ($list_func->(CLOSE_TAG) x ($last_depth + 1)); 
+    $last_depth -= $root_depth;
+    $last_depth++ if $self->{include_trunk};
+    push @results => ($list_func->(CLOSE_TAG) x ($last_depth + 1));
     return (join "\n" => @results);
 }
 
@@ -155,7 +155,7 @@ sub expandAllComplex {
 sub _processConfig {
     my ($self, $config) = @_;
     my %config = %{$config};
-    
+
     # Make sure the tag style is always set to something we know &
     # set tags to be the hashref of tags we want to save extra indirection later
     if ( !exists $config{ tag_style } ) {
@@ -167,10 +167,10 @@ sub _processConfig {
     else {
         $config{ tags } = $tags{ $config{ tag_style } };
     }
-        
-    my $list_func = $self->_buildListFunction(%config) 
+
+    my $list_func = $self->_buildListFunction(%config)
         || throw Tree::Simple::View::CompilationFailed "list function didn't compile", $@;
-    my $list_item_func  = $self->_buildListItemFunction(%config) 
+    my $list_item_func  = $self->_buildListItemFunction(%config)
     	|| throw Tree::Simple::View::CompilationFailed "list item function didn't compile", $@;
 
     return ($list_func, $list_item_func);
@@ -198,7 +198,7 @@ use constant LIST_ITEM_FUNCTION_CODE_STRING  => q|;
 ## list config processing
 sub _processListConfig {
     my ($self, %config) = @_;
-    
+
     my $list_type = "UL";
     $list_type = (($config{list_type} eq "unordered") ? "UL" : "OL") if exists $config{list_type};
 
@@ -210,14 +210,14 @@ sub _processListConfig {
         # to it, no other element requires this so far,
         # but if it did, this same idiom could be reused
         my $_list_css = $config{list_css};
-        $_list_css .= ";" unless ($_list_css =~ /\;$/);        
+        $_list_css .= ";" unless ($_list_css =~ /\;$/);
         $list_css = $config{tags}->{STYLE} . "${_list_css}'";
     }
     elsif (exists $config{list_css_class}) {
         $list_css = $config{tags}->{CLASS} . $config{list_css_class} . "'";
     }
     # otherwise do nothing and stick with default
-    
+
     return ($list_type, $list_css);
 }
 
@@ -233,7 +233,7 @@ sub _buildListFunction {
 
 sub _processListItemConfig {
     my ($self, %config) = @_;
-    
+
     my $list_item_css = "";
     if (exists $config{list_item_css}) {
         $list_item_css = $config{tags}->{STYLE} . $config{list_item_css} . "'";
@@ -241,7 +241,7 @@ sub _processListItemConfig {
     elsif (exists $config{list_item_css_class}) {
         $list_item_css = $config{tags}->{CLASS} . $config{list_item_css_class} . "'";
     }
-    # otherwise do nothing and stick with default    
+    # otherwise do nothing and stick with default
 
     my $expanded_item_css = "";
     if (exists $config{expanded_item_css}) {
@@ -250,12 +250,12 @@ sub _processListItemConfig {
     elsif (exists $config{expanded_item_css_class}) {
         $expanded_item_css = $config{tags}->{CLASS} . $config{expanded_item_css_class} . "'";
     }
-    # otherwise do nothing and stick with default    
-    
+    # otherwise do nothing and stick with default
+
     my $node_formatter;
-    $node_formatter = $config{node_formatter} 
+    $node_formatter = $config{node_formatter}
         if (exists $config{node_formatter} && ref($config{node_formatter}) eq "CODE");
-        
+
     return ($list_item_css, $expanded_item_css, $node_formatter);
 }
 
@@ -263,7 +263,7 @@ sub _buildListItemFunction {
     my ($self, %config) = @_;
     # process the configuration directives
     my ($list_item_css, $expanded_item_css, $node_formatter) = $self->_processListItemConfig(%config);
-    # now compile the subroutine in the current environment    
+    # now compile the subroutine in the current environment
     return eval $self->LIST_ITEM_FUNCTION_CODE_STRING;
 }
 
@@ -280,56 +280,56 @@ Tree::Simple::View::HTML - A class for viewing Tree::Simple hierarchies in HTML
 =head1 SYNOPSIS
 
   use Tree::Simple::View::HTML;
-  
+
   ## a simple example
   # use the defaults (an unordered list with no CSS)
   my $tree_view = Tree::Simple::View::HTML->new($tree);
 
   ## more complex examples
-                                        
-  # use the CSS properties                                    
+
+  # use the CSS properties
   my $tree_view = Tree::Simple::View::HTML->new($tree => (
                                 list_type  => "ordered",
                                 list_css => "list-style: circle;",
                                 list_item_css => "font-family: courier;",
-                                expanded_item_css => "font-family: courier; font-weight: bold",                               
-                                ));  
-                                
-  # use the CSS classes                                  
+                                expanded_item_css => "font-family: courier; font-weight: bold",
+                                ));
+
+  # use the CSS classes
   my $tree_view = Tree::Simple::View::HTML->new($tree => (
                                 list_css_class => "myListClass",
                                 list_item_css_class => "myListItemClass",
-                                expanded_item_css_class => "myExpandedListItemClass",                                
-                                ));                                                                                                                                                                                                                                                                                                                                                                                                                                                                                
-                                   
+                                expanded_item_css_class => "myExpandedListItemClass",
+                                ));
+
   # mix the CSS properties and CSS classes
   my $tree_view = Tree::Simple::View::HTML->new($tree => (
                                 list_css => "list-style: circle;",
                                 list_item_css => "font-family: courier;",
-                                expanded_item_css_class => "myExpandedListItemClass",                                                         
+                                expanded_item_css_class => "myExpandedListItemClass",
                                 node_formatter => sub {
                                     my ($tree) = @_;
                                     return "<B>" . $tree->getNodeValue()->description() . "</B>";
                                     }
-                                ));  
-                              
-  
+                                ));
+
+
   # print out the tree fully expanded
   print $tree_view->expandAll();
-  
+
   # print out the tree expanded along a given path (see below for details)
-  print $tree_view->expandPath("Root", "Child", "GrandChild");                                                           
+  print $tree_view->expandPath("Root", "Child", "GrandChild");
 
 =head1 DESCRIPTION
 
-This is a class for use with Tree::Simple object hierarchies to serve as a means of 
-displaying them in HTML. It is the "View", while the Tree::Simple object hierarchy 
-would be the "Model" in your standard Model-View-Controller paradigm. 
+This is a class for use with Tree::Simple object hierarchies to serve as a means of
+displaying them in HTML. It is the "View", while the Tree::Simple object hierarchy
+would be the "Model" in your standard Model-View-Controller paradigm.
 
-This class outputs fairly vanilla HTML in its simpliest configuration, suitable for 
-both legacy browsers and text-based browsers. Through the use of various configuration 
-options, CSS can be applied to support more advanced browsers but still degrade 
-gracefully to legacy browsers. 
+This class outputs fairly vanilla HTML in its simpliest configuration, suitable for
+both legacy browsers and text-based browsers. Through the use of various configuration
+options, CSS can be applied to support more advanced browsers but still degrade
+gracefully to legacy browsers.
 
 =head1 METHODS
 
@@ -337,98 +337,98 @@ gracefully to legacy browsers.
 
 =item B<new ($tree, %configuration)>
 
-Accepts a C<$tree> argument of a Tree::Simple object (or one derived from Tree::Simple), 
-if C<$tree> is not a Tree::Simple object, and exception is thrown. This C<$tree> object 
-does not need to be a ROOT, you can start at any level of the tree you desire. The 
+Accepts a C<$tree> argument of a Tree::Simple object (or one derived from Tree::Simple),
+if C<$tree> is not a Tree::Simple object, and exception is thrown. This C<$tree> object
+does not need to be a ROOT, you can start at any level of the tree you desire. The
 options in the C<%config> argument are as follows:
 
 =over 4
 
 =item I<tag_style>
 
-This can be either 'html' or 'xhtml', which will produce output with tags in capitals 
-or lowercase respectively, for xhtml compliance. The default is 'html' for backwards 
+This can be either 'html' or 'xhtml', which will produce output with tags in capitals
+or lowercase respectively, for xhtml compliance. The default is 'html' for backwards
 compatibility.
 
 =item I<list_type>
 
-This can be either 'ordered' or 'unordered', which will produce ordered and unordered 
+This can be either 'ordered' or 'unordered', which will produce ordered and unordered
 lists respectively. The default is 'unordered'.
 
 =item I<list_css>
 
-This can be a string of CSS to be applied to the list tag (C<UL> or C<OL> depending 
-upon the I<list_type> option). This option and the I<list_css_class> are mutually 
+This can be a string of CSS to be applied to the list tag (C<UL> or C<OL> depending
+upon the I<list_type> option). This option and the I<list_css_class> are mutually
 exclusive, and this option will override in a conflict.
 
 =item I<list_css_class>
 
-This can be a CSS class name which is applied to the list tag (C<UL> or C<OL> depending 
-upon the I<list_type> option). This option and the I<list_css> are mutually exclusive, 
+This can be a CSS class name which is applied to the list tag (C<UL> or C<OL> depending
+upon the I<list_type> option). This option and the I<list_css> are mutually exclusive,
 and the I<list_css> option will override in a conflict.
 
 =item I<list_item_css>
 
-This can be a string of CSS to be applied to the list item tag (C<LI>). This option 
-and the I<list_item_css_class> are mutually exclusive, and this option will override 
+This can be a string of CSS to be applied to the list item tag (C<LI>). This option
+and the I<list_item_css_class> are mutually exclusive, and this option will override
 in a conflict.
 
 =item I<list_item_css_class>
 
-This can be a CSS class name which is applied to the list item tag (C<LI>). This option 
-and the I<list_item_css> are mutually exclusive, and the I<list_item_css> option will 
+This can be a CSS class name which is applied to the list item tag (C<LI>). This option
+and the I<list_item_css> are mutually exclusive, and the I<list_item_css> option will
 override in a conflict.
 
 =item I<expanded_item_css>
 
-This can be a string of CSS to be applied to the list item tag (C<LI>) if it has an 
-expanded set of children. This option and the I<expanded_item_css_class> are mutually 
+This can be a string of CSS to be applied to the list item tag (C<LI>) if it has an
+expanded set of children. This option and the I<expanded_item_css_class> are mutually
 exclusive, and this option will override in a conflict.
 
 =item I<expanded_item_css_class>
 
-This can be a CSS class name which is applied to the list item tag (C<LI>) if it has 
-an expanded set of children. This option and the I<expanded_item_css> are mutually 
+This can be a CSS class name which is applied to the list item tag (C<LI>) if it has
+an expanded set of children. This option and the I<expanded_item_css> are mutually
 exclusive, and the I<expanded_item_css> option will override in a conflict.
 
 =item I<node_formatter>
 
-This can be a CODE reference which will be given the current tree object as its only 
-argument. The output of this subroutine will be placed within the list item tags 
-(C<LI>). This option can be used to implement; custom formatting of the node, handling 
-of complex node objects or implementing any type of handler code to drive your 
-interface (using link tags or form submissions, etc). 
+This can be a CODE reference which will be given the current tree object as its only
+argument. The output of this subroutine will be placed within the list item tags
+(C<LI>). This option can be used to implement; custom formatting of the node, handling
+of complex node objects or implementing any type of handler code to drive your
+interface (using link tags or form submissions, etc).
 
 =back
 
 =item B<getTree>
 
-A basic accessor to reach the underlying tree object. 
+A basic accessor to reach the underlying tree object.
 
 =item B<getConfig>
 
-A basic accessor to reach the underlying configuration hash. 
+A basic accessor to reach the underlying configuration hash.
 
 =item B<includeTrunk ($boolean)>
 
-This controls the getting and setting (through the optional C<$boolean> argument) of 
-the option to include the tree's trunk in the output. Many times, the trunk is not 
-actually part of the tree, but simply a root from which all the branches spring. 
-However, on occasion, it might be nessecary to view a sub-tree, in which case, the 
-trunk is likely intended to be part of the output. This option defaults to off. 
+This controls the getting and setting (through the optional C<$boolean> argument) of
+the option to include the tree's trunk in the output. Many times, the trunk is not
+actually part of the tree, but simply a root from which all the branches spring.
+However, on occasion, it might be nessecary to view a sub-tree, in which case, the
+trunk is likely intended to be part of the output. This option defaults to off.
 
 =item B<setPathComparisonFunction ($CODE)>
 
-This takes a C<$CODE> reference, which can be used to add custom path comparison 
-features to Tree::Simple::View. The function will get two arguments, the first is 
-the C<$current_path>, the second is the C<$current_tree>. When using C<expandPath>, 
-it may sometimes be nessecary to be able to control the comparison of the path values. 
-For instance, your node may be an object and need a specific method called to match 
-the path against. 
+This takes a C<$CODE> reference, which can be used to add custom path comparison
+features to Tree::Simple::View. The function will get two arguments, the first is
+the C<$current_path>, the second is the C<$current_tree>. When using C<expandPath>,
+it may sometimes be nessecary to be able to control the comparison of the path values.
+For instance, your node may be an object and need a specific method called to match
+the path against.
 
 =item B<expandPath (@path)>
 
-This method will return a string of HTML which will represent your tree expanded 
+This method will return a string of HTML which will represent your tree expanded
 along the given C<@path>. This is best shown visually. Given this tree:
 
   Tree-Simple-View
@@ -441,13 +441,13 @@ along the given C<@path>. This is best shown visually. Given this tree:
                       DHTML.pm
       Makefile.PL
       MANIFEST
-      README 
+      README
       Changes
       t
           10_Tree_Simple_View_test.t
           20_Tree_Simple_View_HTML_test.t
           30_Tree_Simple_View_DHTML_test.t
-          
+
 And given this path:
 
   Tree-Simple-View, lib, Tree, Simple
@@ -462,64 +462,64 @@ Your display would like something like this:
                   View
       Makefile.PL
       MANIFEST
-      README 
+      README
       Changes
       t
 
-As you can see, the given path has been expanded, but no other sub-trees are 
-shown (nor is the HTML of the un-expanded nodes to be found in the output). 
+As you can see, the given path has been expanded, but no other sub-trees are
+shown (nor is the HTML of the un-expanded nodes to be found in the output).
 
-It should be noted that this method actually calls either the C<expandPathSimple> 
-or C<expandPathComplex> method depending upon the C<%config> argument in the 
+It should be noted that this method actually calls either the C<expandPathSimple>
+or C<expandPathComplex> method depending upon the C<%config> argument in the
 constructor. See their documenation for details.
 
 =item B<expandPathSimple ($tree, @path)>
 
-If no C<%config> argument is given in the constructor, then this method is called 
-by C<expandPath>. This method is optimized since it does not need to process any 
+If no C<%config> argument is given in the constructor, then this method is called
+by C<expandPath>. This method is optimized since it does not need to process any
 configuration, but just as the name implies, it's output is simple.
 
-This method can also be used for another purpose, which is to bypass a previously 
+This method can also be used for another purpose, which is to bypass a previously
 specified configuration and use the base "simple" configuration instead.
 
 =item B<expandPathComplex ($tree, $config, @path)>
 
-If a C<%config> argument is given in the constructor, then this method is called 
-by C<expandPath>. This method has been optimized to be used with configurations, 
-and will actually custom compile code (using C<eval>) to speed up the generation 
+If a C<%config> argument is given in the constructor, then this method is called
+by C<expandPath>. This method has been optimized to be used with configurations,
+and will actually custom compile code (using C<eval>) to speed up the generation
 of the output.
 
-This method can also be used for another purpose, which is to bypass a previously 
-specified configuration and use the configuration specified (as a HASH reference) 
+This method can also be used for another purpose, which is to bypass a previously
+specified configuration and use the configuration specified (as a HASH reference)
 in the C<$config> parameter.
 
 =item B<expandAll>
 
-This method will return a string of HTML which will represent your tree completely 
+This method will return a string of HTML which will represent your tree completely
 expanded.
 
-It should be noted that this method actually calls either the C<expandAllSimple> 
-or C<expandAllComplex> method depending upon the C<%config> argument in the 
-constructor.   
+It should be noted that this method actually calls either the C<expandAllSimple>
+or C<expandAllComplex> method depending upon the C<%config> argument in the
+constructor.
 
 =item B<expandAllSimple>
 
-If no C<%config> argument is given in the constructor, then this method is called 
-by C<expandAll>. This method too is optimized since it does not need to process 
+If no C<%config> argument is given in the constructor, then this method is called
+by C<expandAll>. This method too is optimized since it does not need to process
 any configuration.
 
-This method as well can also be used to bypass a previously specified configuration 
+This method as well can also be used to bypass a previously specified configuration
 and use the base "simple" configuration instead.
 
 =item B<expandAllComplex ($config)>
 
-If a C<%config> argument is given in the constructor, then this method is called 
-by C<expandAll>. This method too has been optimized to be used with configurations, 
-and will also custom compile code (using C<eval>) to speed up the generation of 
+If a C<%config> argument is given in the constructor, then this method is called
+by C<expandAll>. This method too has been optimized to be used with configurations,
+and will also custom compile code (using C<eval>) to speed up the generation of
 the output.
 
-Just as with C<expandPathComplex>, this method can be to bypass a previously 
-specified configuration and use the configuration specified (as a HASH reference) 
+Just as with C<expandPathComplex>, this method can be to bypass a previously
+specified configuration and use the configuration specified (as a HASH reference)
 in the C<$config> parameter.
 
 =back
@@ -530,32 +530,32 @@ in the C<$config> parameter.
 
 =item B<depth-based css>
 
-I would like to be able to set any of my css properties as an array, which would 
+I would like to be able to set any of my css properties as an array, which would
 essentially allow for depth-based css values. For instance, something like this:
 
   list_css => [
       "font-size: 14pt;",
       "font-size: 12pt;",
-      "font-size: 10pt;"      
+      "font-size: 10pt;"
       ];
 
-This would result in the first level of the tree having a font-size of 14 points, 
-the second level would have a font-size of 12 points, then all other levels past 
-the second level (third and beyond) would have a font-size of 10 points. Of course 
-if a fourth element were added to this array (ex: "font-size: 8pt;"), then the third 
-level would have a font-size of 10 points, and all others past that level would 
-have the font-size of 8 points. 
+This would result in the first level of the tree having a font-size of 14 points,
+the second level would have a font-size of 12 points, then all other levels past
+the second level (third and beyond) would have a font-size of 10 points. Of course
+if a fourth element were added to this array (ex: "font-size: 8pt;"), then the third
+level would have a font-size of 10 points, and all others past that level would
+have the font-size of 8 points.
 
-Ideally this option would be available for all I<*_css> and I<*_css_class> options. 
-I have not yet figured out the best way to do this though, so ideas/suggestions are 
+Ideally this option would be available for all I<*_css> and I<*_css_class> options.
+I have not yet figured out the best way to do this though, so ideas/suggestions are
 welcome, of course, patches are even better.
 
 =back
 
 =head1 BUGS
 
-None that I am aware of. Of course, if you find a bug, let me know, and I will be 
-sure to fix it. 
+None that I am aware of. Of course, if you find a bug, let me know, and I will be
+sure to fix it.
 
 =head1 CODE COVERAGE
 
@@ -584,6 +584,6 @@ Copyright 2004-2008 by Infinity Interactive, Inc.
 L<http://www.iinteractive.com>
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself. 
+it under the same terms as Perl itself.
 
 =cut

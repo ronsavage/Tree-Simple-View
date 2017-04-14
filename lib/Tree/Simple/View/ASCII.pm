@@ -6,7 +6,7 @@ use Tree::Simple::View::Exceptions;
 
 use parent 'Tree::Simple::View';
 
-our $VERSION = '0.180001';
+our $VERSION = '0.180002';
 
 sub expandPathSimple {
     my ( $self, $tree, @full_path ) = @_;
@@ -200,8 +200,8 @@ Tree::Simple::View::ASCII - A class for viewing Tree::Simple hierarchies in ASCI
 
 This is a Tree::Simple::View subclass which provides simple ASCII formatting for trees.
 
-I had this code lying around, and I figured it was best to put it into here. This is 
-an early release of this, and it lacks configuration parameter handling, but that can 
+I had this code lying around, and I figured it was best to put it into here. This is
+an early release of this, and it lacks configuration parameter handling, but that can
 be easily added later when I need it.
 
 =head1 METHODS
@@ -210,7 +210,7 @@ be easily added later when I need it.
 
 =item B<expandAllSimple>
 
-This will draw a fully expanded tree. 
+This will draw a fully expanded tree.
 
 =item B<expandAllComplex>
 
@@ -218,7 +218,7 @@ This currently is aliased to the C<expandAllSimple> since we don't have config h
 
 =item B<expandPathSimple (@path)>
 
-This will draw a tree with the given C<@path> expanded. 
+This will draw a tree with the given C<@path> expanded.
 
 =item B<expandPathComplex>
 
@@ -228,12 +228,12 @@ This currently is aliased to the C<expandPathSimple> since we don't have config 
 
 =head1 TODO
 
-Config handling, allowing you to customize the drawing. Patches welcome, I just don't 
+Config handling, allowing you to customize the drawing. Patches welcome, I just don't
 currently have the time to add it.
 
 =head1 BUGS
 
-None that I am aware of. Of course, if you find a bug, let me know, and I will be sure to fix it. 
+None that I am aware of. Of course, if you find a bug, let me know, and I will be sure to fix it.
 
 =head1 AUTHOR
 
@@ -246,6 +246,6 @@ Copyright 2004-2008 by Infinity Interactive, Inc.
 L<http://www.iinteractive.com>
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself. 
+it under the same terms as Perl itself.
 
 =cut

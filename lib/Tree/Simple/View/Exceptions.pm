@@ -4,7 +4,7 @@ package Tree::Simple::View::Exceptions;
 use strict;
 use warnings;
 
-our $VERSION = '0.180001';
+our $VERSION = '0.180002';
 
 use Class::Throwable qw(
     Tree::Simple::View::InsufficientArguments
@@ -12,7 +12,7 @@ use Class::Throwable qw(
     Tree::Simple::View::AbstractClass
     Tree::Simple::View::CompilationFailed
 );
-    
+
 1;
 
 __END__
@@ -29,7 +29,7 @@ Tree::Simple::View::Exceptions - A set of exceptions for Tree::Simple::View
 
 =head1 DESCRIPTION
 
-This just creates and loads a few exceptions for use by the Tree::Simple::View classes. 
+This just creates and loads a few exceptions for use by the Tree::Simple::View classes.
 Nothing else to see really.
 
 =head1 EXCEPTIONS
@@ -48,7 +48,7 @@ Nothing else to see really.
 
 =head1 BUGS
 
-None that I am aware of. Of course, if you find a bug, let me know, and I will be sure to fix it. 
+None that I am aware of. Of course, if you find a bug, let me know, and I will be sure to fix it.
 
 =head1 CODE COVERAGE
 
@@ -73,6 +73,6 @@ Copyright 2004-2008 by Infinity Interactive, Inc.
 L<http://www.iinteractive.com>
 
 This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself. 
+it under the same terms as Perl itself.
 
 =cut

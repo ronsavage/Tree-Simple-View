@@ -6,7 +6,7 @@ use warnings;
 use Test::More tests => 31;
 use Test::Exception;
 
-BEGIN { 
+BEGIN {
     use_ok('Tree::Simple::View');
 }
 
@@ -28,7 +28,7 @@ throws_ok {
 
 {
     package My::Tree::Simple::View;
-    use base 'Tree::Simple::View';
+    use parent 'Tree::Simple::View';
 }
 
 my $tree_view = My::Tree::Simple::View->new($tree, %config);
@@ -104,7 +104,7 @@ throws_ok {
     $tree_view->expandPathComplex();
 } "Tree::Simple::View::AbstractMethod", '... this should die because it calls an abstract method';
 
-# now we need to check that expandPath and expandAll 
+# now we need to check that expandPath and expandAll
 # work as expected without a configuration present
 
 my $tree_view2 = My::Tree::Simple::View->new($tree);

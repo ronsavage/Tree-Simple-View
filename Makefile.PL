@@ -29,8 +29,13 @@ my(%params) =
 	PREREQ_PM =>
 	{
 		'Class::Throwable'	=> 0.10,
+		'constant'			=> 0,
+		'parent'			=> 0,
+		'perl'				=> 5.6.0,
 		'Scalar::Util'		=> 1.18,
+		'strict'			=> 0,
 		'Tree::Simple'		=> 1.07,
+		'warnings'			=> 0,
 	},
 	TEST_REQUIRES => {
 		'Test::More'	   => 0.47,

@@ -6,7 +6,7 @@ use warnings;
 
 our $VERSION = '0.180002';
 
-use base 'Tree::Simple::View';
+use parent 'Tree::Simple::View';
 
 use Tree::Simple::View::Exceptions;
 

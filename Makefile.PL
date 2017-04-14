@@ -28,7 +28,7 @@ my(%params) =
 	},
 	PREREQ_PM =>
 	{
-		'Class::Throwable'	=> 0.10
+		'Class::Throwable'	=> 0.10,
 		'Scalar::Util'		=> 1.18,
 		'Tree::Simple'		=> 1.07,
 	},

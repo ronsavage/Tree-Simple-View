@@ -13,11 +13,6 @@ WriteMakefile(
     CONFIGURE_REQUIRES => {
         'ExtUtils::MakeMaker' => 0,
     },
-    BUILD_REQUIRES => {
-        'Test::More'       => 0.47,
-        'Test::Exception'  => 0.15,
-        'Test::LongString' => 0,
-    },
     PREREQ_PM => {
         'Tree::Simple'     => 1.07,
         'Scalar::Util'     => 1.18,
@@ -32,6 +27,11 @@ WriteMakefile(
                 web  => 'https://github.com/mziescha/tree-simple-view',
             },
         }
+    },
+    TEST_REQUIRES => {
+        'Test::More'       => 0.47,
+        'Test::Exception'  => 0.15,
+        'Test::LongString' => 0,
     },
     dist  => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean => { FILES    => 'Tree-Simple-View-*' },

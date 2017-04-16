@@ -194,6 +194,16 @@ use constant LIST_ITEM_FUNCTION_CODE_STRING  => q|;
 		my($item_css)			= $list_item_css;
 		$item_css				= $expanded_item_css if ($is_expanded && $expanded_item_css);
 		my($node_value)			= $node_formatter ? $node_formatter->($t) : $t->getNodeValue;
+		my($child_count)		= $t->getChildCount;
+
+		if ($html5 == 1)
+		{
+			my($depth)		= $t->getDepth;
+			my($last_depth)	= $t->getParent->getDepth;
+
+			print "# node_value: $node_value. depth: $depth. $last_depth. child_count: $child_count. \n";
+
+		}
 
 		return  "<${$config{tags} }{LI}$item_css>$node_value</${$config{tags} }{LI}>";
     }

@@ -43,15 +43,17 @@ can_ok("Tree::Simple::View::HTML", 'expandAll');
 
 	my($expected) = <<EXPECTED;
 <UL>
-<LI>1</LI>
+<LI>1
 <UL>
 <LI>1.1</LI>
 <LI>1.2</LI>
 </UL>
-<LI>2</LI>
+</LI>
+<LI>2
 <UL>
 <LI>2.1</LI>
 </UL>
+</LI>
 <LI>3</LI>
 </UL>
 EXPECTED
@@ -60,6 +62,8 @@ EXPECTED
 
 	is($output, $expected, '... got what we expected');
 }
+
+=pod
 
 {
 	my($tree_view) = Tree::Simple::View::HTML->new($tree, html5 => 1);
@@ -92,5 +96,7 @@ EXPECTED
 
 	is($output, $expected, '... got what we expected');
 }
+
+=cut
 
 done_testing();

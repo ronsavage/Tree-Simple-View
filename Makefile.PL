@@ -34,7 +34,7 @@ my(%params) =
 		'perl'				=> 5.6.0,
 		'Scalar::Util'		=> 1.18,
 		'strict'			=> 0,
-		'Tree::Simple'		=> 1.07,
+		'Tree::Simple'		=> 1.31,
 		'warnings'			=> 0,
 	},
 	TEST_REQUIRES => {

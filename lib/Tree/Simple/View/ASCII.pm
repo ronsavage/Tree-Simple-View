@@ -6,7 +6,7 @@ use Tree::Simple::View::Exceptions;
 
 use parent 'Tree::Simple::View';
 
-our $VERSION = '0.180002';
+our $VERSION = '0.19';
 
 sub expandPathSimple {
     my ( $self, $tree, @full_path ) = @_;

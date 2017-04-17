@@ -4,7 +4,7 @@ package Tree::Simple::View::Exceptions;
 use strict;
 use warnings;
 
-our $VERSION = '0.180002';
+our $VERSION = '0.19';
 
 use Class::Throwable qw(
     Tree::Simple::View::InsufficientArguments

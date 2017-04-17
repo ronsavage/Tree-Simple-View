@@ -4,7 +4,7 @@ package Tree::Simple::View::HTML;
 use strict;
 use warnings;
 
-our $VERSION = '0.180002';
+our $VERSION = '0.19';
 
 use parent 'Tree::Simple::View';
 
@@ -101,6 +101,7 @@ sub expandPathComplex {
 
 sub expandAllSimple  {
     my ($self) = @_;
+
     my @results = ('<UL>');
     my $root_depth = $self->{tree}->getDepth() + 1;
     my $last_depth = -1;
@@ -120,35 +121,91 @@ sub expandAllSimple  {
     return (join "\n" => @results);
 }
 
-sub expandAllComplex {
-    my ($self, $config) = @_;
+sub expandAllComplex
+{
+	my($self, $config)				= @_;
+	my($html5)						= $$config{html5} ? 1 : 0;
+	my($last_depth)					= -1;
+	my($list_func, $list_item_func)	= $self->_processConfig($config);
+	my($root_depth)					= $self->{tree}->getDepth + 1;
 
-    my ($list_func, $list_item_func) = $self->_processConfig($config);
+	my(@results);
 
-    my @results = $list_func->(OPEN_TAG);
-    my $root_depth = $self->{tree}->getDepth() + 1;
-    my $last_depth = -1;
-    my $traversal_sub = sub {
-        my ($t) = @_;
-        my $current_depth = $t->getDepth();
-        push @results => ($list_func->(CLOSE_TAG) x ($last_depth - $current_depth)) if ($last_depth > $current_depth);
-        if ($t->isLeaf()) {
-            push @results => ($list_item_func->($t));
-        }
-        else {
-            push @results => $list_item_func->($t, EXPANDED);
-        }
-        push @results => $list_func->(OPEN_TAG) unless $t->isLeaf();
-        $last_depth = $current_depth;
-    };
-    $traversal_sub->($self->{tree}) if $self->{include_trunk};
-    $self->{tree}->traverse($traversal_sub);
-    $last_depth -= $root_depth;
-    $last_depth++ if $self->{include_trunk};
-    push @results => ($list_func->(CLOSE_TAG) x ($last_depth + 1));
+	if ($html5)
+	{
+		@results									= ();
+		my($css, $expanded_css, $node_formatter)	= $self->_processListItemConfig(%$config);
+		$css										= $expanded_css;
+		my($pre_sub)								= sub
+		{
+			my($t)			= @_;
+			my($node_value)	= $node_formatter ? $node_formatter->($t) : $t->getNodeValue;
 
-    return (join "\n" => @results);
-}
+			push @results, "<$tags{html}{UL}$css>" if ($t->isFirstChild);
+			push @results, "<$tags{html}{LI}$css>$node_value";
+		};
+		my($post_sub) = sub
+		{
+			my($t) = @_;
+
+			push @results, "</$tags{html}{LI}>";
+			push @results, "</$tags{html}{UL}>" if ($t->isLastChild);
+		};
+
+		if ($self->{include_trunk})
+		{
+			push @results, $list_func->(OPEN_TAG);
+
+			$pre_sub->($self->{tree});
+		}
+
+		$self->{tree}->traverse($pre_sub, $post_sub);
+
+		if ($self->{include_trunk})
+		{
+			$post_sub->($self->{tree});
+
+			push @results, $list_func->(CLOSE_TAG);
+		}
+	}
+	else
+	{
+		my($traversal_sub) = sub
+		{
+			my($t)				= @_;
+			my($current_depth)	= $t->getDepth;
+
+			push @results, ($list_func->(CLOSE_TAG) x ($last_depth - $current_depth) ) if ($last_depth > $current_depth);
+
+			if ($t->isLeaf)
+			{
+				push @results, ($list_item_func->($t) );
+			}
+			else
+			{
+				push @results, $list_item_func->($t, EXPANDED);
+			}
+
+			push @results, $list_func->(OPEN_TAG) unless $t->isLeaf;
+
+			$last_depth = $current_depth;
+		};
+
+		push @results, $list_func->(OPEN_TAG);
+
+		$traversal_sub->($self->{tree}) if $self->{include_trunk};
+		$self->{tree}->traverse($traversal_sub);
+
+		$last_depth -= $root_depth;
+
+		$last_depth++ if $self->{include_trunk};
+
+		push @results, ($list_func->(CLOSE_TAG) x ($last_depth + 1) );
+	}
+
+	return (join "\n" => @results);
+
+} # End of expandAllComplex.
 
 ## private methods
 
@@ -194,16 +251,6 @@ use constant LIST_ITEM_FUNCTION_CODE_STRING  => q|;
 		my($item_css)			= $list_item_css;
 		$item_css				= $expanded_item_css if ($is_expanded && $expanded_item_css);
 		my($node_value)			= $node_formatter ? $node_formatter->($t) : $t->getNodeValue;
-		my($child_count)		= $t->getChildCount;
-
-		if ($html5 == 1)
-		{
-			my($depth)		= $t->getDepth;
-			my($last_depth)	= $t->getParent->getDepth;
-
-			print "# node_value: $node_value. depth: $depth. $last_depth. child_count: $child_count. \n";
-
-		}
 
 		return  "<${$config{tags} }{LI}$item_css>$node_value</${$config{tags} }{LI}>";
     }
@@ -270,13 +317,13 @@ sub _processListItemConfig {
     $node_formatter = $config{node_formatter}
         if (exists $config{node_formatter} && ref($config{node_formatter}) eq 'CODE');
 
-    return ($list_item_css, $expanded_item_css, $node_formatter, $config{html5});
+    return ($list_item_css, $expanded_item_css, $node_formatter);
 }
 
 sub _buildListItemFunction {
     my ($self, %config) = @_;
     # process the configuration directives
-    my ($list_item_css, $expanded_item_css, $node_formatter, $html5) = $self->_processListItemConfig(%config);
+    my ($list_item_css, $expanded_item_css, $node_formatter) = $self->_processListItemConfig(%config);
     # now compile the subroutine in the current environment
     return eval $self->LIST_ITEM_FUNCTION_CODE_STRING;
 }

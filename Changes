@@ -1,7 +1,9 @@
 Revision history for Perl extension Tree-Simple-View.
 
-0.180002  2017-04-14:11:13:21
-	- Add repostory section to the pod of Tree::Simple::View.
+0.19  2017-04-14:11:13:21
+	- This version depends on Tree::Simple V 1.31, and in particular the new methods in that
+		version: getSiblingCount(), isFirstChild() and isLastChild().
+	- Add repository section to the pod of Tree::Simple::View.
 	- Move t/manifest.t, t/pod_coverage.t and t/pod.t to xt/author.
 	- Add Changelog.ini.
 	- Add .gitignore, LICENSE.
@@ -10,7 +12,7 @@ Revision history for Perl extension Tree-Simple-View.
 	- Add various modules to the pre-reqs in Makefile.PL.
 	- Update SEE ALSO in pod.
 	- Standardize dates in this file.
-	- Add t/24_HTML5_test.t to test RT#121099.
+	- Add t/24_Tree_Simple_View_HTML5_test.t to test RT#121099.
 	- Replace most double-quotes with single-quotes to reduce visual clutter.
 
 0.180001  2017-02-05T12:00:00

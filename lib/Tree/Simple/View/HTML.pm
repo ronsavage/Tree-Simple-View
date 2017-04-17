@@ -460,6 +460,15 @@ argument. The output of this subroutine will be placed within the list item tags
 of complex node objects or implementing any type of handler code to drive your
 interface (using link tags or form submissions, etc).
 
+=item I<html5>
+
+This takes a Boolean value, and defaults to 0.
+
+If set to 1, lists are output as per the HTML5 standard
+L<https://www.w3.org/wiki/HTML_lists#Nesting_lists>.
+
+See t/24_Tree_Simple_View_HTML5_test.t for sample code.
+
 =back
 
 =item B<getTree>
@@ -637,6 +646,12 @@ Information specifically about CSS for HTML lists is at:
 =head1 AUTHOR
 
 stevan little, E<lt>stevan@iinteractive.comE<gt>
+
+Ron Savage E<lt>ron@savage.net.auE<gt> is co-maint as of V 0.19.
+
+=head1 REPOSITORY
+
+L<https://github.com/ronsavage/Tree-Simple-View>.
 
 =head1 COPYRIGHT AND LICENSE
 

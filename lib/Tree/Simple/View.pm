@@ -345,15 +345,15 @@ am not sure.
 
 =back
 
-=head1 REPOSITORY
-
-L<https://github.com/mziescha/tree-simple-view>.
-
-Ron Savage has a fork of the above at L<https://github.com/rsavage/Tree-Simple-View>.
-
 =head1 AUTHOR
 
 stevan little, E<lt>stevan@iinteractive.comE<gt>
+
+Ron Savage E<lt>ron@savage.net.auE<gt> is co-maint as of V 0.19.
+
+=head1 REPOSITORY
+
+L<https://github.com/ronsavage/Tree-Simple-View>.
 
 =head1 COPYRIGHT AND LICENSE
 
